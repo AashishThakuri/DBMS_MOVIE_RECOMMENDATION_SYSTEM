@@ -16,7 +16,7 @@ CREATE TABLE users (
 -- ==========================================
 -- 2) MOVIES 
 -- ==========================================
-CREATE TABLE movies (     								-- table for search
+CREATE TABLE movies (     								
     movie_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
     genre VARCHAR(80),
@@ -115,6 +115,7 @@ INSERT INTO movies  VALUES
 (26,'Dead Poets Society', 'Comedy, Drama', 1989,'posters/26.webp', 'English', 8.1),
 (27,'Hannibal', 'Crime, Drama, Horror', 2013,'posters/27.jpeg', 'English', 8.5),
 (28,'Parasite', 'Drama, Thriller', 2019, 'posters/28.jpeg','Korean', 8.5);
+
 
 
 
