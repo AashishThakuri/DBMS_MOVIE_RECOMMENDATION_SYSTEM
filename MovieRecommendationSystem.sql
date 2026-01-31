@@ -218,3 +218,159 @@ SELECT * FROM auth_sessions;
 
 
 
+-- CRUD 
+
+USE movie_recommendation_system;
+
+DELIMITER $$
+
+-- =========================================================
+-- USER ACTIONS
+-- 1) Sign in (creates a session)
+-- 2) Sign out (updates session logout_time)
+-- 3) Rate a movie (insert or update rating)
+-- =========================================================
+
+CREATE PROCEDURE user_sign_in(
+    IN p_user_id INT,
+    IN p_device_info VARCHAR(200)
+)
+BEGIN
+    INSERT INTO auth_sessions (user_id, device_info)
+    VALUES (p_user_id, p_device_info);
+    
+    -- return the session created (useful for backend)
+    SELECT LAST_INSERT_ID() AS session_id;
+END$$
+
+
+CREATE PROCEDURE user_sign_out(
+    IN p_session_id INT
+)
+BEGIN
+    UPDATE auth_sessions
+    SET logout_time = CURRENT_TIMESTAMP
+    WHERE session_id = p_session_id;
+END$$
+
+
+-- User rates a movie (because UNIQUE(user_id, movie_id) exists)
+-- If rating exists → UPDATE it
+-- If rating doesn’t exist → INSERT it
+CREATE PROCEDURE user_rate_movie(
+    IN p_user_id INT,
+    IN p_movie_id INT,
+    IN p_rating INT
+)
+BEGIN
+    INSERT INTO ratings (user_id, movie_id, rating)
+    VALUES (p_user_id, p_movie_id, p_rating)
+    ON DUPLICATE KEY UPDATE
+        rating = VALUES(rating),
+        rated_at = CURRENT_TIMESTAMP;
+END$$
+
+
+-- =========================================================
+-- ADMIN ACTIONS (Movies + Ratings only)
+-- Admin: Add / Update / Delete movies
+-- Admin: Delete ratings or update rating if needed
+-- =========================================================
+
+-- MOVIES: Create
+CREATE PROCEDURE admin_add_movie(
+    IN p_title VARCHAR(150),
+    IN p_genre VARCHAR(80),
+    IN p_release_year INT,
+    IN p_poster_url VARCHAR(255),
+    IN p_language VARCHAR(40),
+    IN p_rating DECIMAL(2,1)
+)
+BEGIN
+    INSERT INTO movies (title, genre, release_year, poster_url, language, rating)
+    VALUES (p_title, p_genre, p_release_year, p_poster_url, p_language, p_rating);
+END$$
+
+
+-- MOVIES: Read (admin view list)
+CREATE PROCEDURE admin_get_all_movies()
+BEGIN
+    SELECT * FROM movies ORDER BY release_year DESC, rating DESC;
+END$$
+
+
+-- MOVIES: Update
+CREATE PROCEDURE admin_update_movie(
+    IN p_movie_id INT,
+    IN p_title VARCHAR(150),
+    IN p_genre VARCHAR(80),
+    IN p_release_year INT,
+    IN p_poster_url VARCHAR(255),
+    IN p_language VARCHAR(40),
+    IN p_rating DECIMAL(2,1)
+)
+BEGIN
+    UPDATE movies
+    SET title = p_title,
+        genre = p_genre,
+        release_year = p_release_year,
+        poster_url = p_poster_url,
+        language = p_language,
+        rating = p_rating
+    WHERE movie_id = p_movie_id;
+END$$
+
+
+-- MOVIES: Delete
+CREATE PROCEDURE admin_delete_movie(
+    IN p_movie_id INT
+)
+BEGIN
+    -- ratings will auto-delete because FK has ON DELETE CASCADE
+    DELETE FROM movies WHERE movie_id = p_movie_id;
+END$$
+
+
+-- RATINGS: Admin Read (view all ratings)
+CREATE PROCEDURE admin_get_all_ratings()
+BEGIN
+    SELECT 
+        r.rating_id, r.user_id, u.username,
+        r.movie_id, m.title,
+        r.rating, r.rated_at
+    FROM ratings r
+    JOIN users u ON u.user_id = r.user_id
+    JOIN movies m ON m.movie_id = r.movie_id
+    ORDER BY r.rated_at DESC;
+END$$
+
+
+-- RATINGS: Admin Update (moderation)
+CREATE PROCEDURE admin_update_rating(
+    IN p_rating_id INT,
+    IN p_new_rating INT
+)
+BEGIN
+    UPDATE ratings
+    SET rating = p_new_rating,
+        rated_at = CURRENT_TIMESTAMP
+    WHERE rating_id = p_rating_id;
+END$$
+
+
+-- RATINGS: Admin Delete (moderation)
+CREATE PROCEDURE admin_delete_rating(
+    IN p_rating_id INT
+)
+BEGIN
+    DELETE FROM ratings WHERE rating_id = p_rating_id;
+END$$
+
+DELIMITER ;
+
+
+-- MY THOUGHT PROCESS FOR THE CRUD OPERATIONS:
+    -- CRUD OPERATIONS WILL BE INITIATED FROM THE FRONTEND AND WILL BE EXECUTED IN THE BACKEND
+    -- Admin can ADD / UPDATE / DELETE → movies and ratings
+    -- User can sign in / sign out → auth_sessions
+    -- User can rate movies → ratings (but only once per movie because of UNIQUE(user_id, movie_id))
