@@ -1,0 +1,117 @@
+/* ========================================= */
+/* SHOWCASE ENHANCEMENTS                     */
+/* ========================================= */
+
+/* Genre Text */
+.showcase__genre {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-family: "brisbane", sans-serif;
+}
+
+/* Ratings Section */
+.showcase__ratings {
+    display: flex;
+    gap: 20px;
+    margin: 1.5rem 0;
+}
+
+.rating-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rating-source {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.rating-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Video Player Container */
+.showcase__video-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding: 2rem;
+}
+
+.showcase__video {
+    max-height: 80vh;
+    max-width: 100%;
+    width: auto;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* Sidebar - Remove Yellow Glow */
+.sidebar-item {
+    cursor: pointer;
+    transition: color 0.3s ease;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.sidebar-item:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar-item.active {
+    color: #fff;
+    border-right: 2px solid #fff;
+    padding-right: 15px;
+}
+
+.sidebar-item.active .sidebar-num {
+    color: #fff;
+}
+
+/* Watch Now Button */
+.showcase__date {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.showcase__date:hover {
+    color: #fff;
+    transform: translateX(5px);
+}
+
+/* Hero Image - Larger */
+.showcase__image {
+    max-height: 95vh !important;
+    height: 85vh !important;
+    width: auto !important;
+    object-fit: contain !important;
+}
+
+/* Close Button - Override */
+.showcase__close {
+    border: none !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 24px !important;
+}
+
+.showcase__close:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}

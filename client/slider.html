@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Featured Trailers - Resonance</title>
+    <!-- Preload fonts to avoid FOUT -->
+    <link rel="stylesheet" href="https://use.typekit.net/zjs0dpp.css">
+    <link rel="stylesheet" type="text/css" href="css/base.css" />
+    <link rel="stylesheet" type="text/css" href="css/slider.css" />
+    <link rel="stylesheet" type="text/css" href="css/showcase.css" />
+    <script>document.documentElement.className = "js";</script>
+</head>
+
+<body>
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader__content">
+            <div class="loader__ring"></div>
+            <div class="loader__text">
+                <span class="brand">RESONANCE</span>
+                <span class="tagline">CINEMATIC EXPERIENCE</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Not Found Overlay -->
+    <div id="not-found" class="not-found">
+        <span>NOT FOUND</span>
+    </div>
+
+    <!-- Showcase Detail View -->
+    <div id="showcase" class="showcase">
+        <div class="showcase__close">CLOSE</div>
+
+        <div class="showcase__content">
+            <div class="showcase__brand">RESONANCE</div>
+
+            <div class="showcase__info">
+                <h1 id="showcase-title" class="showcase__title">TITLE</h1>
+                <p id="showcase-genre" class="showcase__genre">Genre</p>
+                <p id="showcase-desc" class="showcase__desc">Description goes here...</p>
+
+                <!-- Ratings Section -->
+                <div id="showcase-ratings" class="showcase__ratings">
+                    <div class="rating-item">
+                        <span class="rating-source">IMDb</span>
+                        <span class="rating-value" id="rating-imdb">8.8</span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-source">RT</span>
+                        <span class="rating-value" id="rating-rt">87%</span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-source">MC</span>
+                        <span class="rating-value" id="rating-mc">74</span>
+                    </div>
+                </div>
+
+                <div class="showcase__meta">
+                    <span class="meta-tag">FHD</span>
+                    <span class="meta-tag">18+</span>
+                    <span class="meta-tag">5.1</span>
+                </div>
+                <div id="watch-now-btn" class="showcase__date">WATCH NOW ></div>
+            </div>
+
+            <!-- Hero Image (Overview) -->
+            <div class="showcase__hero" id="showcase-hero">
+                <div class="showcase__glow"></div>
+                <img id="showcase-img" src="" alt="Hero" class="showcase__image">
+            </div>
+
+            <!-- Video Player (Trailers) - Hidden by default -->
+            <div id="showcase-video-container" class="showcase__video-container" style="display: none;">
+                <video id="showcase-video" class="showcase__video" controls preload="auto">
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="showcase__sidebar">
+                <div class="sidebar-item active" data-tab="overview">
+                    <span class="sidebar-num">01</span>
+                    <span>Overview</span>
+                </div>
+                <div class="sidebar-item" data-tab="related">
+                    <span class="sidebar-num">02</span>
+                    <span>Related</span>
+                </div>
+                <div class="sidebar-item" data-tab="trailers">
+                    <span class="sidebar-num">03</span>
+                    <span>Trailers</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Video Container (Replaces Canvas) -->
+    <div id="bg-video-container" class="bg-video-container">
+        <!-- Videos injected by JS -->
+    </div>
+
+    <!-- Stage (Main Interactive Area) -->
+    <div class="stage">
+        <!-- Cards Container -->
+        <div id="cards" class="cards">
+            <!-- Cards injected by JS -->
+        </div>
+    </div>
+
+    <!-- Navigation Overlay -->
+    <div class="frame">
+        <a href="index.html" class="back-home">Back to Home</a>
+        <div class="frame__right">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search movie..." autocomplete="off">
+                <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor"
+                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div class="frame__title">Resonance Streaming</div>
+        </div>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div id="recommendations-section" class="recommendations-section">
+        <h2 class="section-title">Recommended For You</h2>
+        <div id="recommendations-grid" class="recommendations-grid">
+            <!-- Dynamically filled by JS -->
+        </div>
+    </div>
+
+    <!-- Continue Watching Section -->
+    <div id="continue-watching" class="continue-section">
+        <h2 class="section-title">Continue Watching</h2>
+        <div id="continue-grid" class="continue-grid">
+            <!-- Dynamically filled by JS -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="footer-logo">RESONANCE</span>
+                <p class="footer-tagline">Your Premium Streaming Experience</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Help</a>
+            </div>
+            <div class="footer-copy">
+                © 2026 Resonance. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- GSAP -->
+    <script src="js/gsap.min.js"></script>
+    <script src="js/slider.js" type="module"></script>
+</body>
+
+</html>

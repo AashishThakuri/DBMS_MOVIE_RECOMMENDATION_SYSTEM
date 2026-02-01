@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resonance - Discover Best Movies</title>
+  <meta name="keywords" content="scroll animation, grid, gsap, 3d, filter" />
+  <meta name="author" content="" />
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://use.typekit.net/pxn8wdc.css">
+  <link rel="stylesheet" type="text/css" href="css/base.css" />
+  <script>document.documentElement.className = "js";</script>
+  <script src="//tympanus.net/codrops/adpacks/analytics.js"></script>
+</head>
+
+<body class="loading">
+  <!-- Window Intro Overlay - scrolls to zoom and fade -->
+  <div class="zoom-overlay" id="zoom-overlay">
+    <img
+      src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp"
+      alt="">
+  </div>
+
+  <main class="shadow">
+    <div class="intro">
+      <img src="img/logo.png" alt="Logo" class="intro__logo">
+      <h1 class="intro__title font-alt">Streaming Movies</h1>
+      <nav class="tags">
+        <a href="#">#Trending</a>
+        <a href="#">#Originals</a>
+        <a href="#">#MustWatch</a>
+      </nav>
+      <div class="auth-buttons">
+        <a href="slider.html" class="pay-btn btn-signin">
+          <span class="btn-text">Sign In</span>
+          <div class="icon-container">
+            <!-- Default: User Icon -->
+            <svg viewBox="0 0 24 24" class="icon default-icon">
+              <path
+                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: Film Reel -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-1">
+              <path
+                d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: Camera -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-2">
+              <path
+                d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: Play -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-3">
+              <path d="M8 5v14l11-7z" fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: Ticket -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-4">
+              <path
+                d="M22 10V6a2 2 0 00-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-1.99-.9-1.99-2s.89-2 1.99-2zm-9 7.5h-2v-2h2v2zm0-4.5h-2v-2h2v2zm0-4.5h-2v-2h2v2z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Success: Check -->
+            <svg viewBox="0 0 24 24" class="icon check-icon">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"></path>
+            </svg>
+          </div>
+        </a>
+
+        <button class="pay-btn btn-login">
+          <span class="btn-text">Login</span>
+          <div class="icon-container">
+            <!-- Default: Login/Enter Icon -->
+            <svg viewBox="0 0 24 24" class="icon default-icon">
+              <path
+                d="M15 4h-3v2h3v12h-3v2h3c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1.59 4.59L12 10l4 4-4 4 1.41 1.41L18.83 14l-5.42-5.41zM6 6h7v2H6v8h7v2H6c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: Film Strip -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-1">
+              <path
+                d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: Popcorn (Custom simplified path) -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-2">
+              <path
+                d="M2.5 13.5h19v8h-19zm2.5-12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: TV -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-3">
+              <path
+                d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Rotating: Ticket -->
+            <svg viewBox="0 0 24 24" class="icon movie-icon-4">
+              <path
+                d="M22 10V6a2 2 0 00-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-1.99-.9-1.99-2s.89-2 1.99-2zm-9 7.5h-2v-2h2v2zm0-4.5h-2v-2h2v2zm0-4.5h-2v-2h2v2z"
+                fill="currentColor"></path>
+            </svg>
+            <!-- Success: Check -->
+            <svg viewBox="0 0 24 24" class="icon check-icon">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"></path>
+            </svg>
+          </div>
+        </button>
+      </div>
+      <span class="intro__info">Scroll to explore</span>
+    </div>
+    <section>
+      <div class="grid">
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/American Gangster.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/American History X.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/American Psycho.webp')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Apocalypto.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Black Swan.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Breaking Bad.avif')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Casino Royale.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Catch Me If You Can.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Chasing Amy.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Chocolat.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/City of God.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Crash.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Crocodile Dundee.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Dead Poets Society.webp')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Downfall.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/F1.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Flight.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Ford vs Ferrari.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Game of Thrones.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/God Bless America.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Grave of the FireFlies.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Hannibal.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Hellboy II The Golden Army.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/hells paradise.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Her.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/I want to eat your pancreas.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/I-See-You.Com.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Inception.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Inglorious Bastards.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Interstellar.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Lock, Stock and Two Smoking Barrels.jpg')">
+            </div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Lost in Translation.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Madagascar 3 Europe\'s Most Wanted.jpg')">
+            </div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Madagascar Escape 2 Africa.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Madagascar.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Main Hoon Lucky The Racer.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Mary and Max.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Match Point.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Memories of Murder.webp')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Midnight Express.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Moneyball.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Ne Zha 2.webp')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/No Country for Old Men.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Oldboy.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Pablo escobar.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Parasite.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img"
+              style="background-image:url('img/Pirates of the Caribbean At World\'s End.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img"
+              style="background-image:url('img/Pirates of the Caribbean The Curse of the Black Pearl.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Pulp Fiction.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Ratatouille.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Rear Window.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Requiem for a Dream.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Scarface.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Shutter Island.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Sid and Nancy.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Son of Satyamurthy.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Stardust.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Suits.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Artist.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Cotton Club.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Great Beauty.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Hangover.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Hobbit The Desolation of Smaug.jpg')">
+            </div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Prestige.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Silence of the Lambs.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Social Network.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Substance.webp')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Third Man.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Truman Show.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/The Wolf of Wall Street.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Troy.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/True Detective.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Unko Sweater.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/Vicky Cristina Barcelona.jpg')"></div>
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-imgwrap">
+            <div class="grid__item-img" style="background-image:url('img/WALL·E.jpg')"></div>
+          </div>
+        </figure>
+      </div><!-- grid -->
+      <div class="mark">
+        <div class="mark__inner font-alt">
+          <span>Action / アクション</span> <span>Adventure / Aventure</span>
+          <span>Comedy / Comedia</span> <span>Drama / Drame</span>
+          <span>Fantasy / 奇幻</span> <span>Horror / ホラー</span>
+          <span>Mystery / 悬疑</span> <span>Romance / ロマンス</span>
+          <span>Sci-Fi / 科幻</span> <span>Thriller / スリラー</span>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="text font-alt">Originals</div>
+    </section>
+    <section>
+      <div class="grid grid--full">
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/American Gangster.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/American History X.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/American Psycho.webp')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Apocalypto.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Black Swan.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Breaking Bad.avif')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Casino Royale.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Catch Me If You Can.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Chasing Amy.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Chocolat.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/City of God.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Crash.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Crocodile Dundee.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Dead Poets Society.webp')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Downfall.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/F1.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Flight.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Ford vs Ferrari.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Game of Thrones.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/God Bless America.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Grave of the FireFlies.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Hannibal.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Hellboy II The Golden Army.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/hells paradise.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Her.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/I want to eat your pancreas.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/I-See-You.Com.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Inception.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Inglorious Bastards.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Interstellar.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Lock, Stock and Two Smoking Barrels.jpg')">
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Lost in Translation.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Madagascar 3 Europe\'s Most Wanted.jpg')">
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Madagascar Escape 2 Africa.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Madagascar.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Main Hoon Lucky The Racer.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Mary and Max.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Match Point.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Memories of Murder.webp')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Midnight Express.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Moneyball.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Ne Zha 2.webp')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/No Country for Old Men.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Oldboy.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Pablo escobar.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Parasite.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Pirates of the Caribbean At World\'s End.jpg')">
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img"
+            style="background-image:url('img/Pirates of the Caribbean The Curse of the Black Pearl.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Pulp Fiction.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Ratatouille.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Rear Window.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Requiem for a Dream.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Scarface.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Shutter Island.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Sid and Nancy.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Son of Satyamurthy.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Stardust.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Suits.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Artist.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Cotton Club.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Great Beauty.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Hangover.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Hobbit The Desolation of Smaug.jpg')">
+          </div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Prestige.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Silence of the Lambs.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Social Network.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Substance.webp')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Third Man.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Truman Show.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/The Wolf of Wall Street.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Troy.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/True Detective.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Unko Sweater.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/Vicky Cristina Barcelona.jpg')"></div>
+        </figure>
+        <figure class="grid__item">
+          <div class="grid__item-img" style="background-image:url('img/WALL·E.jpg')"></div>
+        </figure>
+      </div>
+    </section>
+    <p class="credits font-alt">Made by <a href="https://www.aashishthakuri.com/">Aashish Thakuri</a></p>
+  </main>
+  <!-- GSAP library -->
+  <script src="js/gsap.min.js"></script>
+  <!-- GSAP ScrollTrigger plugin -->
+  <script src="js/ScrollTrigger.min.js"></script>
+  <!-- GSAP SplitText (Club Membership), Trial only https://gsap.com/resources/trial/ -->
+  <script src="https://assets.codepen.io/16327/SplitText3.min.js"></script>
+
+  <!-- ImagesLoaded -->
+  <script src="js/imagesloaded.pkgd.min.js"></script>
+
+  <!-- Add (Lenis) smooth scroll -->
+  <script src="js/lenis.min.js"></script>
+  <script src="js/smoothscroll.js"></script>
+
+  <!-- Authentication Modals -->
+  <!-- 1. Sign In Modal (Google Auth Only) -->
+  <div id="signin-modal" class="auth-modal">
+    <div class="auth-modal-content">
+      <span class="modal-close">&times;</span>
+      <h2>Sign In</h2>
+      <p>Access your personalized library</p>
+      <button id="google-auth-btn" class="google-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. Login Modal (Username/Password Only) -->
+  <div id="login-modal" class="auth-modal">
+    <div class="auth-modal-content">
+      <span class="modal-close">&times;</span>
+      <h2>Login</h2>
+      <form id="regular-login-form">
+        <input type="text" id="login-username" placeholder="Username" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit" id="regular-login-btn">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    /* Auth Modal Styles */
+    .auth-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-modal.active {
+      display: flex;
+    }
+
+    .auth-modal-content {
+      background-color: #1a1a1a;
+      padding: 40px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+      color: white;
+      border: 1px solid #333;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+    }
+
+    .auth-modal-content h2 {
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .auth-modal-content p {
+      color: #888;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: white;
+      color: #444;
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .google-btn:hover {
+      background: #f1f1f1;
+    }
+
+    .google-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    #regular-login-form input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      background: #333;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    #regular-login-form button {
+      width: 100%;
+      padding: 12px;
+      background: #e50914;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #regular-login-form button:hover {
+      background: #b20710;
+    }
+  </style>
+
+  <!-- Scripts for the effect -->
+  <script type="module" src="js/index.js"></script>
+  <!-- Firebase Auth Script -->
+  <script type="module" src="js/firebase_auth.js"></script>
+</body>
+
+</html>

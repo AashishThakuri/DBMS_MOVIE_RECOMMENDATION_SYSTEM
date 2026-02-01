@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Movie Recommendation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/slider.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #111;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .login-box {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #e50914;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #b20710;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Dashboard */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .movie-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .movie-item {
+            display: flex;
+            gap: 20px;
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .movie-item img {
+            width: 60px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .movie-info {
+            flex: 1;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            background: #444;
+        }
+
+        .btn-delete {
+            background: #e50914;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-container">
+        <!-- Login Section -->
+        <div id="login-section" class="login-box">
+            <h2>Admin Login</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username" autocomplete="username" required>
+                <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p id="login-error" style="color: #e50914; margin-top: 10px;"></p>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="hidden">
+            <div class="header">
+                <h1>Movie Management</h1>
+                <button onclick="openModal()">+ Add New Movie</button>
+                <button onclick="logout()" style="background: #333;">Logout</button>
+            </div>
+
+            <div id="movies-container" class="movie-list">
+                <!-- Movies will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Add Modal -->
+    <div id="movie-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Add Movie</h2>
+            <form id="movie-form">
+                <input type="hidden" id="movie-id">
+                <input type="text" id="title" placeholder="Title" required>
+                <input type="text" id="rating" placeholder="Rating (e.g. 8.5)" required>
+                <input type="text" id="genre" placeholder="Genre" required>
+                <input type="number" id="release_year" placeholder="Year" required>
+                <input type="text" id="language" placeholder="Language" required>
+                <textarea id="description" placeholder="Description" rows="4" required></textarea>
+                <input type="text" id="poster_url" placeholder="Poster URL (e.g. covers1/image.jpg)" required>
+                <input type="text" id="trailer_url" placeholder="Trailer URL (e.g. movie trailers/video.mp4)" required>
+                <button type="submit">Save Movie</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
