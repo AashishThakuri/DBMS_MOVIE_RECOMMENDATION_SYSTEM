@@ -1,4 +1,4 @@
-# Streaming Website Resonance
+# Streaming Website "Resonance"
 
 ## Project Overview
 This project is a relational database backend designed to power a **Movie Recommendation System**. It manages a library of movies, user ratings, and administrative controls. The system features built-in logic (Stored Procedures) to handle rating updates and generate content-based recommendations by genre.
