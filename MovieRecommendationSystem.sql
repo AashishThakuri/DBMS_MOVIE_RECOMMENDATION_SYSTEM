@@ -367,3 +367,193 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+```-- =========================================================
+-- FINAL RECOMMENDATION PROCEDURE (genre-aware + collaborative)
+-- Works on your current schema (no new tables).
+-- Requires MySQL 8.0+ because it uses JSON_TABLE.
+-- =========================================================
+
+-- Optional but recommended indexes
+CREATE INDEX IF NOT EXISTS idx_ratings_user_movie ON ratings(user_id, movie_id);
+CREATE INDEX IF NOT EXISTS idx_ratings_movie_user ON ratings(movie_id, user_id);
+CREATE INDEX IF NOT EXISTS idx_ratings_rated_at   ON ratings(rated_at);
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS get_user_recommendations $$
+CREATE PROCEDURE get_user_recommendations(
+    IN p_user_id INT,
+    IN p_limit INT
+)
+BEGIN
+    -- tune this: higher = stronger genre preference
+    DECLARE v_genre_weight DECIMAL(6,3) DEFAULT 0.150;
+
+    DROP TEMPORARY TABLE IF EXISTS tmp_recs;
+
+    CREATE TEMPORARY TABLE tmp_recs (
+        movie_id INT PRIMARY KEY,
+        score DECIMAL(8,3),
+        reason VARCHAR(30)
+    );
+
+    ----------------------------------------------------------------
+    -- 1) Personalized: Collaborative filtering + Genre bonus
+    ----------------------------------------------------------------
+    INSERT INTO tmp_recs (movie_id, score, reason)
+    WITH
+    user_genres AS (
+        -- User’s favorite genres from movies they rated highly (>=4)
+        SELECT
+            TRIM(jt.genre) AS genre,
+            COUNT(*) AS cnt
+        FROM ratings r
+        JOIN movies m ON m.movie_id = r.movie_id
+        JOIN JSON_TABLE(
+            CONCAT('["', REPLACE(m.genre, ',', '","'), '"]'),
+            '$[*]' COLUMNS (genre VARCHAR(80) PATH '$')
+        ) jt
+        WHERE r.user_id = p_user_id AND r.rating >= 4
+        GROUP BY TRIM(jt.genre)
+    ),
+    liked AS (
+        SELECT movie_id, rating
+        FROM ratings
+        WHERE user_id = p_user_id AND rating >= 4
+    ),
+    neighbors AS (
+        -- Similar users = overlap on liked movies; sim_score weights closeness of ratings
+        SELECT
+            r.user_id AS other_user_id,
+            SUM(5 - ABS(r.rating - l.rating)) AS sim_score,
+            COUNT(*) AS overlap
+        FROM liked l
+        JOIN ratings r
+          ON r.movie_id = l.movie_id
+         AND r.user_id <> p_user_id
+        GROUP BY r.user_id
+        HAVING overlap >= 2
+    ),
+    candidates AS (
+        -- Predict ratings for movies user hasn’t rated
+        SELECT
+            r.movie_id,
+            SUM(n.sim_score * r.rating) / NULLIF(SUM(n.sim_score), 0) AS predicted_rating,
+            SUM(n.sim_score) AS support
+        FROM neighbors n
+        JOIN ratings r ON r.user_id = n.other_user_id
+        LEFT JOIN ratings my
+          ON my.user_id = p_user_id AND my.movie_id = r.movie_id
+        WHERE my.rating_id IS NULL
+        GROUP BY r.movie_id
+    ),
+    candidate_genre_bonus AS (
+        -- Genre bonus = how much candidate’s genres overlap with user’s favorite genres
+        SELECT
+            c.movie_id,
+            COALESCE(SUM(ug.cnt), 0) AS genre_bonus
+        FROM candidates c
+        JOIN movies m ON m.movie_id = c.movie_id
+        JOIN JSON_TABLE(
+            CONCAT('["', REPLACE(m.genre, ',', '","'), '"]'),
+            '$[*]' COLUMNS (genre VARCHAR(80) PATH '$')
+        ) jt
+        LEFT JOIN user_genres ug
+          ON ug.genre = TRIM(jt.genre)
+        GROUP BY c.movie_id
+    )
+    SELECT
+        c.movie_id,
+        (c.predicted_rating + v_genre_weight * gb.genre_bonus) AS score,
+        'collab_genre' AS reason
+    FROM candidates c
+    JOIN candidate_genre_bonus gb ON gb.movie_id = c.movie_id
+    ORDER BY score DESC, c.support DESC
+    LIMIT p_limit;
+
+    ----------------------------------------------------------------
+    -- 2) Fallback: Popular + Genre bonus (if no personalized found)
+    ----------------------------------------------------------------
+    IF (SELECT COUNT(*) FROM tmp_recs) = 0 THEN
+
+        INSERT INTO tmp_recs (movie_id, score, reason)
+        WITH
+        user_genres AS (
+            SELECT
+                TRIM(jt.genre) AS genre,
+                COUNT(*) AS cnt
+            FROM ratings r
+            JOIN movies m ON m.movie_id = r.movie_id
+            JOIN JSON_TABLE(
+                CONCAT('["', REPLACE(m.genre, ',', '","'), '"]'),
+                '$[*]' COLUMNS (genre VARCHAR(80) PATH '$')
+            ) jt
+            WHERE r.user_id = p_user_id AND r.rating >= 4
+            GROUP BY TRIM(jt.genre)
+        ),
+        unseen AS (
+            SELECT m.*
+            FROM movies m
+            LEFT JOIN ratings my
+              ON my.user_id = p_user_id AND my.movie_id = m.movie_id
+            WHERE my.rating_id IS NULL
+        ),
+        unseen_genre_bonus AS (
+            SELECT
+                u.movie_id,
+                COALESCE(SUM(ug.cnt), 0) AS genre_bonus
+            FROM unseen u
+            JOIN JSON_TABLE(
+                CONCAT('["', REPLACE(u.genre, ',', '","'), '"]'),
+                '$[*]' COLUMNS (genre VARCHAR(80) PATH '$')
+            ) jt
+            LEFT JOIN user_genres ug
+              ON ug.genre = TRIM(jt.genre)
+            GROUP BY u.movie_id
+        ),
+        popularity AS (
+            SELECT
+                u.movie_id,
+                COALESCE(AVG(r.rating), 0) AS avg_user_rating,
+                COUNT(r.rating_id) AS rating_count,
+                u.rating AS catalog_rating
+            FROM unseen u
+            LEFT JOIN ratings r ON r.movie_id = u.movie_id
+            GROUP BY u.movie_id, u.rating
+        )
+        SELECT
+            p.movie_id,
+            (
+                p.avg_user_rating
+                + (p.catalog_rating / 2.0)
+                + v_genre_weight * gb.genre_bonus
+            ) AS score,
+            'popular_genre' AS reason
+        FROM popularity p
+        JOIN unseen_genre_bonus gb ON gb.movie_id = p.movie_id
+        ORDER BY score DESC, p.rating_count DESC, p.catalog_rating DESC
+        LIMIT p_limit;
+
+    END IF;
+
+    ----------------------------------------------------------------
+    -- Final output
+    ----------------------------------------------------------------
+    SELECT
+        m.movie_id, m.title, m.genre, m.release_year, m.language, m.poster_url,
+        ROUND(t.score, 2) AS score,
+        t.reason
+    FROM tmp_recs t
+    JOIN movies m ON m.movie_id = t.movie_id
+    ORDER BY t.score DESC, m.rating DESC
+    LIMIT p_limit;
+
+END $$
+
+DELIMITER ;
+
+-- Usage:
+-- CALL get_user_recommendations(4, 10);
+```
+
