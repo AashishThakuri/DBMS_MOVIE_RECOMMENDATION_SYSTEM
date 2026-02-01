@@ -26,7 +26,7 @@ Manages system access for content moderators.
 * **Note:** This table is referenced by `ratings` but must be created before setting up the ratings table. It stores user credentials and profile info.
 
 ---
-###5. ER - Diagram
+### 5. ER - Diagram
 <img width="3136" height="5256" alt="Untitled diagram-2026-02-01-105953" src="https://github.com/user-attachments/assets/518eb506-be85-451a-a2ec-d5d2bf299900" />
 
 
