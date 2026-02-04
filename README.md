@@ -1,59 +1,89 @@
-# Streaming Website "Resonance"
+# Resonance - Immersive Streaming Platform
 
-## Project Overview
-This project is a relational database backend designed to power a **Movie Recommendation System**. It manages a library of movies, user ratings, and administrative controls. The system features built-in logic (Stored Procedures) to handle rating updates and generate content-based recommendations by genre.
+**Resonance** is a next-generation movie streaming and recommendation web application designed with a focus on immersive user experience and fluid animations. It features a stunning 3D interactive slider, real-time database integration, and a comprehensive admin management system.
 
-## Database Schema
+![Resonance Screenshot](client/img/logo.png)
 
-The system uses **MySQL** and consists of the following core tables:
+## 🚀 Key Features
 
-### 1. movies
-The central catalog of films.
-* **Columns:** `movie_id`, `title`, `genre`, `release_year`, `rating` (IMDb/External), `language`, `description`, `poster_url`, `trailer_url`.
-* **Features:** Stores metadata for displaying movie details and "Watch Trailer" links.
+### 🎥 Front-End Experience
+-   **Immersive 3D Slider:** Custom-built "Gradient Slider" using **GSAP** for smooth, physics-based interactions and 3D card transformations.
+-   **Dynamic Intro:** "We Create The Future" scroll-triggered zoom animation that welcomes users (plays once per session).
+-   **Showcase Mode:** Detailed overlay for each movie featuring:
+    -   **Trailers:** Fullscreen trailer playback.
+    -   **Related Movies:** Genre-based recommendation engine.
+    -   **Cast & Crew:** Detailed production info.
+-   **Video Backgrounds:** Dynamic video previews that play when browsing movies.
+-   **Authentication:** 
+    -   Google Sign-In (via **Firebase**).
+    -   Traditional Admin Login.
 
-### 2. ratings
-Links users to movies with a score (1-5).
-* **Columns:** `rating_id`, `user_id`, `movie_id`, `rating`, `rated_at`.
-* **Constraints:** `UNIQUE(user_id, movie_id)` prevents duplicate ratings for the same movie by the same user.
-* **Triggers:** Automatically updates the timestamp on rating changes.
+### 🛠️ Backend & Admin
+-   **Node.js & Express API:** Robust RESTful API handling movie data and user sessions.
+-   **Admin Dashboard:** Secure panel for content management:
+    -   **CRUD Operations:** Add, Edit, Delete, and View movies in real-time.
+    -   **Instant Updates:** Changes reflect immediately on the frontend without server restarts.
+-   **Security:** 
+    -   Environment variable protection.
+    -   Secure firebase configuration serving.
 
-### 3. admins
-Manages system access for content moderators.
-* **Columns:** `admin_id`, `username`, `password`.
+### 🗄️ Database (MySQL)
+The system is powered by a relational MySQL database structure:
+-   **`movies`**: Stores metadata (title, genre, ratings, posters, trailers).
+-   **`users`**: Manages registered users and Google Auth identities.
+-   **`admins`**: Handles administrative access control.
+-   **`ratings`**: (Planned) User rating system.
 
-### 4. users (Dependency)
-* **Note:** This table is referenced by `ratings` but must be created before setting up the ratings table. It stores user credentials and profile info.
+## 🛠️ Technology Stack
 
----
-### 5. ER - Diagram
-<img width="3136" height="5256" alt="Untitled diagram-2026-02-01-105953" src="https://github.com/user-attachments/assets/518eb506-be85-451a-a2ec-d5d2bf299900" />
+-   **Frontend:** HTML5, CSS3 (Custom Properties), JavaScript (ES6+), GSAP (GreenSock), Firebase SDK.
+-   **Backend:** Node.js, Express.js.
+-   **Database:** MySQL.
+-   **Tools:** Git, Postman (for API testing).
 
-
-## Features & Stored Procedures
-
-The database includes pre-compiled SQL procedures for efficient data handling:
-
-| Procedure | Functionality |
-| :--- | :--- |
-| **rate_movie** | Handles "Upsert" logic: Inserts a new rating or updates an existing one if the user has already rated the movie. |
-| **recommend_movies_by_genre** | The core recommendation engine. It suggests movies sharing a specific genre, excluding the one currently being viewed, sorted by rating and randomized for variety. |
-| **add_movie** | A helper procedure for admins to insert new movie metadata quickly. |
-
----
-
-## Setup & Installation
+## ⚙️ Installation & Setup
 
 ### Prerequisites
-* MySQL Server (8.0+)
-* MySQL Workbench or any SQL Client
+-   Node.js installed.
+-   MySQL Server installed and running.
 
-### Step 1: Create the Database
-Run the provided SQL script. **Important:** Ensure you create the `users` table before the `ratings` table to satisfy foreign key constraints.
-
+### 1. Database Setup
+Run the provided SQL script to initialize the schema:
 ```sql
-CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100),
-    email VARCHAR(100) UNIQUE
-);
+SOURCE path/to/MovieRecommendationSystem.sql;
+```
+
+### 2. Backend Setup
+Navigate to the server directory and install dependencies:
+```bash
+cd server
+npm install
+```
+
+Create a `.env` file based on `.env.example`:
+```ini
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=movie_recommendation_system
+# Add your Firebase Config keys here
+```
+
+Start the server:
+```bash
+node server.js
+```
+
+### 3. Frontend Setup
+The frontend is built with vanilla technologies. You can serve it using a simple HTTP server (e.g., Live Server or Python):
+```bash
+cd client
+python -m http.server 8000
+```
+Visit `http://localhost:8000` in your browser.
+
+## 🔒 Security Note
+This repository excludes sensitive configuration files (`.env`). Please ensure you set up your own environment variables and Firebase project keys locally.
+
+---
+**Developed by Aashish Thakuri** | *Resonance Streaming Platform*

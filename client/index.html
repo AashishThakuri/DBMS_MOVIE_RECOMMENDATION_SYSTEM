@@ -9,6 +9,7 @@
   <meta name="author" content="" />
   <link rel="shortcut icon" href="favicon.ico">
   <link rel="stylesheet" href="https://use.typekit.net/pxn8wdc.css">
+
   <link rel="stylesheet" type="text/css" href="css/base.css" />
   <script>document.documentElement.className = "js";</script>
   <script src="//tympanus.net/codrops/adpacks/analytics.js"></script>
@@ -75,8 +76,9 @@
           <div class="icon-container">
             <!-- Default: Login/Enter Icon -->
             <svg viewBox="0 0 24 24" class="icon default-icon">
+              <!-- Simple Key Icon -->
               <path
-                d="M15 4h-3v2h3v12h-3v2h3c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1.59 4.59L12 10l4 4-4 4 1.41 1.41L18.83 14l-5.42-5.41zM6 6h7v2H6v8h7v2H6c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z"
+                d="M21 10h-8.35A5.99 5.99 0 0 0 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6a5.99 5.99 0 0 0 5.65-4H17v4h4v-4h2v-4zM7 15c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"
                 fill="currentColor"></path>
             </svg>
             <!-- Rotating: Film Strip -->
@@ -109,6 +111,8 @@
             </svg>
           </div>
         </button>
+
+
       </div>
       <span class="intro__info">Scroll to explore</span>
     </div>
@@ -782,6 +786,18 @@
         <input type="password" id="login-password" placeholder="Password" required>
         <button type="submit" id="regular-login-btn">Login</button>
       </form>
+
+      <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px; color: #666; font-size: 12px;">
+        <div style="flex:1; height:1px; background:#444;"></div> OR <div style="flex:1; height:1px; background:#444;">
+        </div>
+      </div>
+
+      <button id="google-auth-btn-2" class="google-btn"
+        style="display:flex; align-items:center; justify-content:center; gap:10px; background:white; color:#444; width:100%; padding:12px; border-radius:6px; border:none; font-weight:600; cursor:pointer; margin-top:15px;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
+          style="width:20px; height:20px;">
+        Sign in with Google
+      </button>
     </div>
   </div>
 

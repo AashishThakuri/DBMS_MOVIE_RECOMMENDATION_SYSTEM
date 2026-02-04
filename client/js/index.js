@@ -250,6 +250,28 @@ const animateCredits = () => {
   });
 };
 
+// Interaction Logic: Click on Movie -> Auth Check
+const setupGridInteractions = () => {
+  const allGridItems = document.querySelectorAll('.grid__item');
+  const signinModal = document.getElementById('signin-modal');
+
+  allGridItems.forEach(item => {
+    // Add pointer cursor to indicate interactivity
+    item.style.cursor = 'pointer';
+
+    item.addEventListener('click', () => {
+      // Check Global Auth State (exposed by firebase_auth.js)
+      const isLoggedIn = window.isUserLoggedIn && window.isUserLoggedIn();
+
+      if (!isLoggedIn) {
+        if (signinModal) signinModal.classList.add('active');
+      } else {
+        console.log("User is logged in. No action (or navigate to detail if implemented).");
+      }
+    });
+  });
+};
+
 
 // Main initialization function
 const init = () => {
@@ -259,6 +281,7 @@ const init = () => {
   animateTextElement();   // Animate the split text on scroll
   animateGridFull();      // Animate the full grid with staggered delay
   animateCredits();       // Call the credits animation
+  setupGridInteractions();// Setup click listeners
 };
 
 // Preload images and initialize animations after the images have loaded

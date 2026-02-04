@@ -73,12 +73,21 @@ app.get('/api/config/firebase', (req, res) => {
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     // Simple query (In production, use hashed passwords!)
+    console.log(`[Login Attempt] Username: '${username}', Password: '${password}'`);
+
     const query = 'SELECT * FROM admins WHERE username = ? AND password = ?';
     pool.query(query, [username, password], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) {
+            console.error('[Login Error] Database error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        console.log(`[Login Result] Found users: ${results.length}`);
+
         if (results.length > 0) {
             res.json({ success: true, message: 'Login successful' });
         } else {
+            console.warn('[Login Failed] Invalid credentials or user not found');
             res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
     });
@@ -121,6 +130,35 @@ app.delete('/api/movies/:id', (req, res) => {
         if (err) return res.status(500).json({ error: 'Failed to delete movie' });
         console.log(`[Admin] Movie ID ${id} deleted successfully`);
         res.json({ success: true, message: 'Movie deleted' });
+    });
+});
+
+// 5. Sync Google User
+app.post('/api/auth/sync', (req, res) => {
+    const { uid, email, displayName, photoURL } = req.body;
+
+    if (!uid || !email) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Generate a username from display name or email if not provided
+    const username = displayName || email.split('@')[0];
+
+    const query = `
+        INSERT INTO users (google_uid, email, username, display_name, profile_picture) 
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+        display_name = VALUES(display_name), 
+        profile_picture = VALUES(profile_picture),
+        last_login = CURRENT_TIMESTAMP
+    `;
+
+    pool.query(query, [uid, email, username, displayName, photoURL], (err, result) => {
+        if (err) {
+            console.error('[Auth Sync] Database error:', err);
+            return res.status(500).json({ error: 'Database sync failed' });
+        }
+        res.json({ success: true, message: 'User synced successfully' });
     });
 });
 

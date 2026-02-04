@@ -1,5 +1,147 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 // Data Source (Fetched from Database)
 let MOVIES = [];
+let auth;
+let provider;
+
+// Auth & Profile Logic
+async function initAuth() {
+    try {
+        const response = await fetch('http://localhost:3000/api/config/firebase');
+        if (!response.ok) throw new Error('Failed to load Firebase config');
+        const firebaseConfig = await response.json();
+
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        provider = new GoogleAuthProvider();
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Authenticated as:", user.email);
+                updateUserProfile(user);
+                syncUserWithDB(user); // Sync to DB
+                // Ensure profile is visible
+                const p = document.querySelector('.user-profile');
+                if (p) p.style.display = 'flex';  // Hide modal if open
+                const modal = document.getElementById('signin-modal');
+                if (modal) modal.style.display = 'none';
+            } else {
+                console.warn("User not authenticated. Browsing mode active.");
+            }
+        });
+
+        setupProfileEvents();
+        setupSliderAuthEvents();
+
+    } catch (error) {
+        console.error("Auth Init Error:", error);
+    }
+}
+
+function setupSliderAuthEvents() {
+    const modal = document.getElementById('signin-modal');
+    const closeBtn = modal ? modal.querySelector('.modal-close') : null;
+    const googleBtn = document.getElementById('google-auth-btn-slider');
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    }
+
+    if (googleBtn) {
+        googleBtn.addEventListener('click', async () => {
+            if (!auth) return;
+            try {
+                await signInWithPopup(auth, provider);
+                // onAuthStateChanged handles UI update
+            } catch (error) {
+                console.error("Slider Google Key Error:", error);
+                alert("Login Failed: " + error.message);
+            }
+        });
+    }
+}
+
+function updateUserProfile(user) {
+    const avatar = document.getElementById('user-avatar');
+    const nameSpan = document.getElementById('user-name');
+
+    if (nameSpan) {
+        nameSpan.textContent = user.displayName || user.email.split('@')[0];
+    }
+
+    if (avatar && user.photoURL) {
+        avatar.src = user.photoURL;
+    } else if (avatar && user.email) {
+        // Fallback to initials
+        const initial = user.email[0].toUpperCase();
+        avatar.src = `https://ui-avatars.com/api/?name=${initial}&background=random`;
+    }
+}
+
+function setupProfileEvents() {
+    const profileContainer = document.querySelector('.user-profile');
+    const avatar = document.getElementById('user-avatar');
+    const logoutBtn = document.getElementById('btn-logout');
+
+    if (avatar && profileContainer) {
+        profileContainer.addEventListener('click', (e) => {
+            console.log("Profile clicked"); // Debug log
+            e.stopPropagation();
+            profileContainer.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', () => {
+            profileContainer.classList.remove('active');
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html'; // Redirect to home on logout
+            } catch (error) {
+                console.error("Logout failed:", error);
+            }
+        });
+    }
+}
+
+async function syncUserWithDB(user) {
+    console.log("[Sync] Attempting to sync user:", user.email, user.photoURL);
+    try {
+        const res = await fetch('http://localhost:3000/api/auth/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL
+            })
+        });
+        const data = await res.json();
+        console.log("[Sync] Result:", data);
+    } catch (err) {
+        console.error("Sync Error:", err);
+    }
+}
+
+
+
+// Start Auth after DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initAuth();
+});
 
 async function fetchMovies() {
     try {
@@ -167,13 +309,11 @@ function openShowcase(movie) {
         showcaseImg.src = movie.character || movie.cover;
     }
 
-    // Set Video Source & Preload Instantly
+    // Set Video Source & Preload
     if (showcaseVideo && movie.trailer) {
         showcaseVideo.src = movie.trailer;
-        showcaseVideo.load(); // Trigger load
-        // Force browser to start buffering by playing and immediately pausing (trick)
-        // showcaseVideo.play().then(() => showcaseVideo.pause()).catch(() => {});
-        // Actually, just load() with preload="auto" is usually enough, but let's ensure it's ready.
+        showcaseVideo.preload = 'auto';
+        showcaseVideo.load(); // Trigger load without muting
     }
 
     // Reset to Overview tab (this also resets video container visibility)
@@ -585,10 +725,17 @@ stage.addEventListener('pointerup', (e) => {
         dragging = false;
     } else {
         // Was a click - open showcase if clicked on a card
+        // Was a click - open showcase if clicked on a card
         if (clickedCard) {
             const index = parseInt(clickedCard.dataset.index, 10);
             if (!isNaN(index) && MOVIES[index]) {
-                openShowcase(MOVIES[index]);
+                // AUTH CHECK
+                if (auth && auth.currentUser) {
+                    openShowcase(MOVIES[index]);
+                } else {
+                    const modal = document.getElementById('signin-modal');
+                    if (modal) modal.style.display = 'flex';
+                }
             }
         }
     }
@@ -708,45 +855,82 @@ async function init() {
     isEntering = false;
     startCarousel();
 
-    // ============================================================================
+    // Populate sections NOW that movies are loaded
+    populateContinueWatching();
+    populateRecommendations(null);
+
     // SEARCH LOGIC
-    // ============================================================================
+
     const searchInput = document.getElementById('search-input');
+    const suggestionsBox = document.getElementById('search-suggestions');
     const notFoundOverlay = document.getElementById('not-found');
 
-    if (searchInput) {
+    if (searchInput && suggestionsBox) {
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
 
-            if (!query) {
-                if (notFoundOverlay) notFoundOverlay.classList.remove('active');
+            if (query.length === 0) {
+                suggestionsBox.classList.remove('active');
+                setTimeout(() => suggestionsBox.innerHTML = '', 300);
                 return;
             }
 
-            // Find matching movie index
-            const matchIndex = MOVIES.findIndex(movie =>
-                movie.title.toLowerCase().includes(query)
-            );
+            // Filter movies
+            const matches = MOVIES.filter(m => m.title.toLowerCase().includes(query));
 
-            if (matchIndex !== -1) {
-                // Found: Hide overlay and scroll
-                if (notFoundOverlay) notFoundOverlay.classList.remove('active');
+            if (matches.length > 0) {
+                suggestionsBox.innerHTML = matches.map(m => `
+                    <div class="suggestion-item" data-title="${m.title}">
+                        <img src="${m.cover}" class="suggestion-poster">
+                        <span>${m.title}</span>
+                    </div>
+                `).join('');
 
-                const targetX = items[matchIndex].x;
+                suggestionsBox.classList.add('active');
 
-                // Animate to target
-                window.gsap.to({ val: SCROLL_X }, {
-                    val: targetX,
-                    duration: 0.8,
-                    ease: "power2.out",
-                    onUpdate: function () {
-                        SCROLL_X = this.targets()[0].val;
-                        updateCarouselTransforms();
-                    }
+                // Attach click events
+                document.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        const title = item.getAttribute('data-title');
+                        const movie = MOVIES.find(m => m.title === title);
+                        if (movie) {
+                            openShowcase(movie);
+                            suggestionsBox.classList.remove('active');
+                            searchInput.value = ''; // Clear search
+                        }
+                    });
                 });
             } else {
-                // Not Found: Show overlay
-                if (notFoundOverlay) notFoundOverlay.classList.add('active');
+                suggestionsBox.classList.remove('active');
+            }
+        });
+
+        // Search on Enter key (Original behavior fallback)
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value.toLowerCase().trim();
+                const movie = MOVIES.find(m => m.title.toLowerCase().includes(query));
+
+                suggestionsBox.classList.remove('active');
+
+                if (movie) {
+                    openShowcase(movie);
+                    populateRecommendations(movie);
+                    searchInput.value = '';
+                } else {
+                    if (notFoundOverlay) {
+                        notFoundOverlay.classList.add('active');
+                        setTimeout(() => notFoundOverlay.classList.remove('active'), 2000);
+                    }
+                }
+            }
+        });
+
+        // Close suggestions on click outside
+        window.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.remove('active');
             }
         });
     }
@@ -754,9 +938,9 @@ async function init() {
 
 init();
 
-// =========================================
+
 // RECOMMENDATIONS (Genre-based)
-// =========================================
+
 const recommendationsGrid = document.getElementById('recommendations-grid');
 const recommendationsSection = document.getElementById('recommendations-section');
 
@@ -801,9 +985,9 @@ function populateRecommendations(baseMovie) {
     if (recommendationsSection) recommendationsSection.style.display = recs.length > 0 ? 'block' : 'none';
 }
 
-// =========================================
+
 // CONTINUE WATCHING (LocalStorage)
-// =========================================
+
 const continueGrid = document.getElementById('continue-grid');
 const continueSection = document.getElementById('continue-watching');
 const CONTINUE_KEY = 'resonance_continue_watching';
@@ -863,6 +1047,4 @@ function populateContinueWatching() {
     });
 }
 
-// Initialize on load
-populateContinueWatching();
-populateRecommendations(null);
+// Note: populateContinueWatching & populateRecommendations are now called inside init() after movies load

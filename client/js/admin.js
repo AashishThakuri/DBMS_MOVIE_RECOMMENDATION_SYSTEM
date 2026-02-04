@@ -12,29 +12,40 @@ const modalTitle = document.getElementById('modal-title');
 
 // State
 let allMovies = [];
+let currentMovieState = null;
 
 // Login Handler
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!username || !password) {
+        loginError.textContent = 'Please fill in all fields';
+        return;
+    }
 
     try {
+        console.log(`Sending login request for: ${username}`);
         const res = await fetch(`${API_URL}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         });
-        const data = await res.json();
 
-        if (data.success) {
-            localStorage.setItem('adminToken', 'true'); // Simple client-side check
+        const data = await res.json();
+        console.log('Login response:', data);
+
+        if (res.ok && data.success) {
+            localStorage.setItem('adminToken', 'true');
             showDashboard();
         } else {
-            loginError.textContent = data.message;
+            localStorage.removeItem('adminToken'); // Clear any stale token
+            loginError.textContent = data.message || 'Login failed';
         }
     } catch (err) {
-        loginError.textContent = 'Connection error';
+        console.error('Login exception:', err);
+        loginError.textContent = 'Connection error: ' + err.message;
     }
 });
 
@@ -87,11 +98,13 @@ function openModal() {
     modalTitle.textContent = 'Add New Movie';
     movieForm.reset();
     document.getElementById('movie-id').value = '';
+    currentMovieState = null;
     movieModal.classList.remove('hidden');
 }
 
 function closeModal() {
     movieModal.classList.add('hidden');
+    currentMovieState = null;
 }
 
 function openEditModal(id) {
@@ -109,7 +122,30 @@ function openEditModal(id) {
     document.getElementById('poster_url').value = movie.poster_url;
     document.getElementById('trailer_url').value = movie.trailer_url;
 
+    currentMovieState = { ...movie }; // Capture state
+
     movieModal.classList.remove('hidden');
+}
+
+// Toast Helper
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+
+    container.appendChild(toast);
+
+    // Remove from DOM after animation (3s total)
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }
 
 // Form Submit (Add/Edit)
@@ -117,16 +153,48 @@ movieForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const id = document.getElementById('movie-id').value;
+    const ratingVal = parseFloat(document.getElementById('rating').value);
+    const yearVal = parseInt(document.getElementById('release_year').value);
+
+    // Validation
+    if (isNaN(ratingVal) || ratingVal < 0 || ratingVal > 10) {
+        showToast("Please enter a valid rating (0-10)", 'error');
+        return;
+    }
+    if (isNaN(yearVal) || yearVal < 1880 || yearVal > 2100) {
+        showToast("Please enter a valid release year", 'error');
+        return;
+    }
+
     const movieData = {
         title: document.getElementById('title').value,
-        rating: document.getElementById('rating').value,
+        rating: ratingVal,
         genre: document.getElementById('genre').value,
-        release_year: document.getElementById('release_year').value,
+        release_year: yearVal,
         language: document.getElementById('language').value,
         description: document.getElementById('description').value,
         poster_url: document.getElementById('poster_url').value,
         trailer_url: document.getElementById('trailer_url').value
     };
+
+    // Check availability of changes (Only for Edit Mode)
+    if (id && currentMovieState) {
+        // Loose comparison for numbers to avoid type mismatch (string vs number)
+        const isChanged =
+            movieData.title !== currentMovieState.title ||
+            movieData.rating != currentMovieState.rating ||
+            movieData.genre !== currentMovieState.genre ||
+            movieData.release_year != currentMovieState.release_year ||
+            movieData.language !== currentMovieState.language ||
+            movieData.description !== currentMovieState.description ||
+            movieData.poster_url !== currentMovieState.poster_url ||
+            movieData.trailer_url !== currentMovieState.trailer_url;
+
+        if (!isChanged) {
+            closeModal();
+            return; // EXIT HERE -> No Notification
+        }
+    }
 
     const method = id ? 'PUT' : 'POST';
     const url = id ? `${API_URL}/movies/${id}` : `${API_URL}/movies`;
@@ -142,11 +210,12 @@ movieForm.addEventListener('submit', async (e) => {
         if (data.success) {
             closeModal();
             loadMovies();
+            showToast(id ? 'Movie updated successfully' : 'Movie added successfully', 'success');
         } else {
-            alert('Error saving movie');
+            showToast(data.message || 'Error saving movie', 'error');
         }
     } catch (err) {
-        alert('Server error');
+        showToast('Server connection error', 'error');
     }
 });
 
@@ -160,10 +229,11 @@ async function deleteMovie(id) {
 
         if (data.success) {
             loadMovies();
+            showToast('Movie deleted successfully', 'success');
         } else {
-            alert('Error deleting movie');
+            showToast('Error deleting movie', 'error');
         }
     } catch (err) {
-        alert('Server error');
+        showToast('Server connection error', 'error');
     }
 }
